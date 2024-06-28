@@ -174,7 +174,6 @@ namespace ValheimPlayerModels.Loaders
         private bool TryGetPlayerShader(out Shader shader) {
             if (!referencedShader)
             {
-                Runtime.MakeAllAssetsLoadable();
                 // The asset ID here corresponds to Valheim's "Player" shader.
                 if (AssetID.TryParse("0ddedf6492e674317b18255c4db06013", out AssetID playerShaderAssetID))
                 {
