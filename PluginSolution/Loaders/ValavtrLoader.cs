@@ -162,7 +162,11 @@ namespace ValheimPlayerModels.Loaders
         public override void Unload()
         {
             if (avatarBundle) avatarBundle.Unload(true);
-            if (referencedShader) shaderRef.Release();
+            if (referencedShader)
+            {
+                referencedShader = false;
+                shaderRef.Release();
+            }
         }
 
         private bool referencedShader = false;
