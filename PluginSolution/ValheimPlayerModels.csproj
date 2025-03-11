@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
@@ -46,6 +46,7 @@
   <ItemGroup Condition="'$(GameDir)' != '' and '$(PublicizeLocally)' == 'true'">
     <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1" PrivateAssets="all" />
     <Reference Include="$(GameDir)\valheim_Data\Managed\assembly_*.dll" IncludeAssets="compile" Publicize="true"/>
+    <Reference Include="$(GameDir)\valheim_Data\Managed\SoftReferenceableAssets.dll" IncludeAssets="compile" Publicize="true"/>
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">

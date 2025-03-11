@@ -139,5 +139,13 @@ namespace ValheimPlayerModels
             }
         }
     }
+
+    [HarmonyPatch(typeof(EntryPointSceneLoader), nameof(EntryPointSceneLoader.Start))]
+    static class Patch_All_SoftReferenceableAssets {
+        [HarmonyPrefix]
+        static void Prefix() {
+            SoftReferenceableAssets.Runtime.MakeAllAssetsLoadable();
+        }
+    }
 }
 #endif

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using SoftReferenceableAssets;
+using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
 using UnityEngine;
@@ -8,6 +9,7 @@ namespace ValheimPlayerModels.Loaders
     public class ValavtrLoader : AvatarLoaderBase
     {
         private AssetBundle avatarBundle;
+        private SoftReference<Shader> shaderRef;
 
         public override IEnumerator LoadFile(string file)
         {
@@ -67,7 +69,10 @@ namespace ValheimPlayerModels.Loaders
                 {
                     if (mat && mat.shader.name == "Valheim/Standard")
                     {
-                        mat.shader = Shader.Find("Custom/Player");
+                        if (TryGetPlayerShader(out var shader))
+                        {
+                            mat.shader = shader;
+                        }
 
                         var mainTex = mat.HasProperty("_MainTex") ? mat.GetTexture("_MainTex") as Texture2D : null;
                         var bumpMap = mat.HasProperty("_BumpMap") ? mat.GetTexture("_BumpMap") : null;
@@ -157,6 +162,39 @@ namespace ValheimPlayerModels.Loaders
         public override void Unload()
         {
             if (avatarBundle) avatarBundle.Unload(true);
+            if (referencedShader)
+            {
+                referencedShader = false;
+                shaderRef.Release();
+            }
+        }
+
+        private bool referencedShader = false;
+
+        private bool TryGetPlayerShader(out Shader shader) {
+            if (!referencedShader)
+            {
+                // The asset ID here corresponds to Valheim's "Player" shader.
+                if (AssetID.TryParse("0ddedf6492e674317b18255c4db06013", out AssetID playerShaderAssetID))
+                {
+                    shaderRef = new SoftReference<Shader>(playerShaderAssetID);
+                    shaderRef.Load();
+                    referencedShader = true;
+                    shader = shaderRef.Asset;
+                    return true;
+                }
+                Plugin.Log.LogWarning("Failed to find player shader; unable to swap for Valheim/Standard");
+                shader = null;
+                return false;
+            }
+            else if (shaderRef.IsLoaded) {
+                shader = shaderRef.Asset;
+                return true;
+            }
+
+            Plugin.Log.LogError("Shader referenced but not loaded? Something is wrong.");
+            shader = null;
+            return false;
         }
     }
 }
