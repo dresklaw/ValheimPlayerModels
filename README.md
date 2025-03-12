@@ -2,7 +2,7 @@
 ![GitHub all releases](https://img.shields.io/github/downloads/dresklaw/ValheimPlayerModels/total)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/dresklaw/ValheimPlayerModels)
 
-Use custom player models in Valheim !
+Use custom player models in Valheim!
 
 # [DOWNLOAD](https://github.com/dresklaw/ValheimPlayerModels/releases/latest/download/ValheimPlayerModels.dll)
 ![preview](https://github.com/dresklaw/ValheimPlayerModels/blob/main/preview.png)
