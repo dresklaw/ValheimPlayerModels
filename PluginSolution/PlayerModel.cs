@@ -236,7 +236,7 @@ namespace ValheimPlayerModels
                                 playerList.FindIndex(p => p.m_characterID.UserID == zNetView.m_zdo.m_uid.UserID);
                             if (playerIndex != -1)
                             {
-                                playerId = playerList[playerIndex].m_host;
+                                playerId = playerList[playerIndex].m_userInfo.m_id.ToString();
                                 tries++;
                             }
                             else
