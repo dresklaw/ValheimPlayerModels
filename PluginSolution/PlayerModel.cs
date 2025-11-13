@@ -64,8 +64,17 @@ namespace ValheimPlayerModels
             StartCoroutine(LoadAvatar());
         }
 
-        private void OnDestroy()
+        private void OnEnable()
         {
+            CustomPlayerLoop.PreConstraints += PreConstraints;
+        }
+
+        private void OnDisable() {
+            CustomPlayerLoop.PreConstraints -= PreConstraints;
+        }
+
+        private void OnDestroy()
+        {   
             if (localModel == this)
             {
                 Plugin.showActionMenu = false;
@@ -119,6 +128,19 @@ namespace ValheimPlayerModels
             }
         }
 
+        private void PreConstraints()
+        {
+            //Debug.Log("Doing pre-constraint thing.");
+            if (playerModelLoaded && playerModelVisible && !dead)
+            {
+                if (enableTracking)
+                {
+                    ogPose.GetHumanPose(ref pose);
+                    pmPose.SetHumanPose(ref pose);
+                }
+            }
+        }
+
         private void LateUpdate()
         {
             if (playerModelLoaded && playerModelVisible && !dead)
@@ -126,8 +148,8 @@ namespace ValheimPlayerModels
                 if (enableTracking)
                 {
                     avatar.Transform.localPosition = Vector3.zero;
-                    ogPose.GetHumanPose(ref pose);
-                    pmPose.SetHumanPose(ref pose);
+                    //ogPose.GetHumanPose(ref pose);
+                    //pmPose.SetHumanPose(ref pose);
 
                     Transform ogHips = ogAnimator.GetBoneTransform(HumanBodyBones.Hips);
 

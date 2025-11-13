@@ -8,6 +8,8 @@ using BepInEx.Configuration;
 using HarmonyLib;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.LowLevel;
+using UnityEngine.PlayerLoop;
 using ValheimPlayerModels.Loaders;
 using BepInEx.Logging;
 
@@ -54,6 +56,10 @@ namespace ValheimPlayerModels
             harmony.PatchAll();
 
             Logger.LogInfo($"Plugin {PluginConfig.PLUGIN_GUID} is loaded!");
+
+            CustomPlayerLoop.AppStart();
+
+            Logger.LogInfo($"Plugin {PluginConfig.PLUGIN_GUID} adjusted player loop?");
         }
 
         private void Update()
@@ -427,6 +433,99 @@ namespace ValheimPlayerModels
 
         #endregion
 
+    }
+
+    // After `Update()`, but before `PreLateUpdate`, so we have the effect of animations from 
+    public struct VPMPreConstraints { }
+
+    public static class CustomPlayerLoop
+    {
+        public static event Action PreConstraints;
+
+        //[RuntimeInitializeOnLoadMethod]
+        public static void AppStart()
+        {
+            var defaultLoop = PlayerLoop.GetDefaultPlayerLoop();
+            var customUpdate = new PlayerLoopSystem
+            {
+                subSystemList = null,
+                updateDelegate = PreConstraintsDelegate,
+                type = typeof(VPMPreConstraints)
+            };
+
+            var updatedLoop = InsertSystemBefore<PreLateUpdate.ConstraintManagerUpdate>(defaultLoop, customUpdate);
+            PlayerLoop.SetPlayerLoop(updatedLoop);
+            Debug.Log("Set player loop.");
+        }
+
+        private static PlayerLoopSystem InsertSystemAfter<T>(in PlayerLoopSystem loopSystem, PlayerLoopSystem newSystem) where T : struct
+        {
+            // Create a new root PlayerLoopSystem
+            PlayerLoopSystem newPlayerLoop = new()
+            {
+                loopConditionFunction = loopSystem.loopConditionFunction,
+                type = loopSystem.type,
+                updateDelegate = loopSystem.updateDelegate,
+                updateFunction = loopSystem.updateFunction
+            };
+
+            //Iterate through the subsystems in the existing loop we passed in and add them to the new list
+            if (loopSystem.subSystemList != null)
+            {
+                // Create a new list to populate with subsystems, including the custom system
+                List<PlayerLoopSystem> newSubSystemList = new();
+                for (var i = 0; i < loopSystem.subSystemList.Length; i++)
+                {
+                    newSubSystemList.Add(InsertSystemAfter<T>(loopSystem.subSystemList[i], newSystem));
+                    // If the previously added subsystem is of the type to add after, add the custom system
+                    if (loopSystem.subSystemList[i].type == typeof(T))
+                    {
+                        newSubSystemList.Add(newSystem);
+                        Debug.Log("Set target type, after.");
+                    }
+                }
+                newPlayerLoop.subSystemList = newSubSystemList.ToArray();
+            }
+
+            return newPlayerLoop;
+        }
+
+        private static PlayerLoopSystem InsertSystemBefore<T>(in PlayerLoopSystem loopSystem, PlayerLoopSystem newSystem) where T : struct
+        {
+            // Create a new root PlayerLoopSystem
+            PlayerLoopSystem newPlayerLoop = new()
+            {
+                loopConditionFunction = loopSystem.loopConditionFunction,
+                type = loopSystem.type,
+                updateDelegate = loopSystem.updateDelegate,
+                updateFunction = loopSystem.updateFunction
+            };
+
+            //Iterate through the subsystems in the existing loop we passed in and add them to the new list
+            if (loopSystem.subSystemList != null)
+            {
+                // Create a new list to populate with subsystems, including the custom system
+                List<PlayerLoopSystem> newSubSystemList = new();
+                for (var i = 0; i < loopSystem.subSystemList.Length; i++)
+                {
+                    // If the previously added subsystem is of the type to add after, add the custom system
+                    if (loopSystem.subSystemList[i].type == typeof(T))
+                    {
+                        newSubSystemList.Add(newSystem);
+                        Debug.Log("Set target type, before.");
+                    }
+                    newSubSystemList.Add(InsertSystemBefore<T>(loopSystem.subSystemList[i], newSystem));
+                }
+                newPlayerLoop.subSystemList = newSubSystemList.ToArray();
+            }
+
+            return newPlayerLoop;
+        }
+
+        private static void PreConstraintsDelegate()
+        {
+            PreConstraints?.Invoke();
+        }
     }
 }
 #endif
