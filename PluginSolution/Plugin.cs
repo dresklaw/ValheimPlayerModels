@@ -64,60 +64,62 @@ namespace ValheimPlayerModels
 
         private void Update()
         {
-            if (PluginConfig.reloadKey.Value.IsDown())
-            {
-                if (PluginConfig.enablePlayerModels.Value)
-                {
-                    PlayerModel[] playerModels = FindObjectsOfType<PlayerModel>();
-                    bool canReload = true;
+            if (Chat.instance != null && !Chat.instance.HasFocus()) {
 
-                    foreach (PlayerModel playerModel in playerModels)
+                if (PluginConfig.reloadKey.Value.IsDown())
+                {
+                    if (PluginConfig.enablePlayerModels.Value)
                     {
-                        if (!playerModel.playerModelLoaded)
+                        PlayerModel[] playerModels = FindObjectsOfType<PlayerModel>();
+                        bool canReload = true;
+
+                        foreach (PlayerModel playerModel in playerModels)
                         {
-                            canReload = false;
-                            break;
+                            if (!playerModel.playerModelLoaded)
+                            {
+                                canReload = false;
+                                break;
+                            }
+                        }
+
+                        if (!canReload) return;
+
+                        foreach (PlayerModel playerModel in playerModels)
+                        {
+                            playerModel.ToggleAvatar(false);
+                            Destroy(playerModel);
+                        }
+
+                        foreach (AvatarLoaderBase loader in playerModelBundleCache.Values)
+                        {
+                            if(loader != null) loader.Unload();
+                        }
+                        playerModelBundleCache.Clear();
+                        RefreshBundlePaths();
+
+                        Player[] players = FindObjectsOfType<Player>();
+                        foreach (Player player in players)
+                        {
+                            player.gameObject.AddComponent<PlayerModel>();
                         }
                     }
-
-                    if (!canReload) return;
-
-                    foreach (PlayerModel playerModel in playerModels)
-                    {
-                        playerModel.ToggleAvatar(false);
-                        Destroy(playerModel);
-                    }
-
-                    foreach (AvatarLoaderBase loader in playerModelBundleCache.Values)
-                    {
-                        if(loader != null) loader.Unload();
-                    }
-                    playerModelBundleCache.Clear();
-                    RefreshBundlePaths();
-
-                    Player[] players = FindObjectsOfType<Player>();
-                    foreach (Player player in players)
-                    {
-                        player.gameObject.AddComponent<PlayerModel>();
-                    }
                 }
-            }
 
-            if (PluginConfig.actionMenuKey.Value.IsDown() && !showAvatarMenu)
-            {
-                if (PlayerModel.localModel != null && Game.instance != null)
+                if (PluginConfig.actionMenuKey.Value.IsDown() && !showAvatarMenu)
                 {
-                    showActionMenu = !showActionMenu;
-                    if (showActionMenu)
+                    if (PlayerModel.localModel != null && Game.instance != null)
                     {
-                        SetUnlockCursor();
-                        GUI.FocusWindow(ActionWindowId);
+                        showActionMenu = !showActionMenu;
+                        if (showActionMenu)
+                        {
+                            SetUnlockCursor();
+                            GUI.FocusWindow(ActionWindowId);
+                        }
+                        else ResetCursor();
                     }
-                    else ResetCursor();
                 }
-            }
 
-            if (PluginConfig.avatarMenuKey.Value.IsDown() && !showActionMenu)
+                if (PluginConfig.avatarMenuKey.Value.IsDown() && !showActionMenu)
             {
                 showAvatarMenu = !showAvatarMenu;
                 if (showAvatarMenu)
@@ -126,6 +128,8 @@ namespace ValheimPlayerModels
                     GUI.FocusWindow(AvatarWindowId);
                 }
                 else ResetCursor();
+            }
+
             }
 
             if (showActionMenu)
