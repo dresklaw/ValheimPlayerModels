@@ -120,15 +120,15 @@ namespace ValheimPlayerModels
                 }
 
                 if (PluginConfig.avatarMenuKey.Value.IsDown() && !showActionMenu)
-            {
-                showAvatarMenu = !showAvatarMenu;
-                if (showAvatarMenu)
                 {
-                    SetUnlockCursor();
-                    GUI.FocusWindow(AvatarWindowId);
+                    showAvatarMenu = !showAvatarMenu;
+                    if (showAvatarMenu)
+                    {
+                        SetUnlockCursor();
+                        GUI.FocusWindow(AvatarWindowId);
+                    }
+                    else ResetCursor();
                 }
-                else ResetCursor();
-            }
 
             }
 
