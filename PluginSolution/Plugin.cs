@@ -64,9 +64,13 @@ namespace ValheimPlayerModels
 
         private void Update()
         {
-            // Suppress our bindings while the chat window has focus, to avoid interfering with chat
-            // messages/commands being entered.
-            var suppress_bindings = Chat.instance != null && Chat.instance.HasFocus();
+            // Suppress our bindings the player controller does not accept input
+            // (implying input is being used for something else).
+            var suppress_bindings = !(
+                Game.instance != null &&
+                Game.instance.m_playerPrefab != null &&
+                Game.instance.m_playerPrefab.GetComponent<PlayerController>().TakeInput()
+            );
 
             if (!suppress_bindings && PluginConfig.reloadKey.Value.IsDown())
             {
