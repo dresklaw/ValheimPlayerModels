@@ -64,72 +64,72 @@ namespace ValheimPlayerModels
 
         private void Update()
         {
-            if (Chat.instance != null && !Chat.instance.HasFocus()) {
+            // Suppress our bindings while the chat window has focus, to avoid interfering with chat
+            // messages/commands being entered.
+            var suppress_bindings = Chat.instance != null && Chat.instance.HasFocus();
 
-                if (PluginConfig.reloadKey.Value.IsDown())
+            if (!suppress_bindings && PluginConfig.reloadKey.Value.IsDown())
+            {
+                if (PluginConfig.enablePlayerModels.Value)
                 {
-                    if (PluginConfig.enablePlayerModels.Value)
+                    PlayerModel[] playerModels = FindObjectsOfType<PlayerModel>();
+                    bool canReload = true;
+
+                    foreach (PlayerModel playerModel in playerModels)
                     {
-                        PlayerModel[] playerModels = FindObjectsOfType<PlayerModel>();
-                        bool canReload = true;
-
-                        foreach (PlayerModel playerModel in playerModels)
+                        if (!playerModel.playerModelLoaded)
                         {
-                            if (!playerModel.playerModelLoaded)
-                            {
-                                canReload = false;
-                                break;
-                            }
-                        }
-
-                        if (!canReload) return;
-
-                        foreach (PlayerModel playerModel in playerModels)
-                        {
-                            playerModel.ToggleAvatar(false);
-                            Destroy(playerModel);
-                        }
-
-                        foreach (AvatarLoaderBase loader in playerModelBundleCache.Values)
-                        {
-                            if(loader != null) loader.Unload();
-                        }
-                        playerModelBundleCache.Clear();
-                        RefreshBundlePaths();
-
-                        Player[] players = FindObjectsOfType<Player>();
-                        foreach (Player player in players)
-                        {
-                            player.gameObject.AddComponent<PlayerModel>();
+                            canReload = false;
+                            break;
                         }
                     }
-                }
 
-                if (PluginConfig.actionMenuKey.Value.IsDown() && !showAvatarMenu)
-                {
-                    if (PlayerModel.localModel != null && Game.instance != null)
+                    if (!canReload) return;
+
+                    foreach (PlayerModel playerModel in playerModels)
                     {
-                        showActionMenu = !showActionMenu;
-                        if (showActionMenu)
-                        {
-                            SetUnlockCursor();
-                            GUI.FocusWindow(ActionWindowId);
-                        }
-                        else ResetCursor();
+                        playerModel.ToggleAvatar(false);
+                        Destroy(playerModel);
+                    }
+
+                    foreach (AvatarLoaderBase loader in playerModelBundleCache.Values)
+                    {
+                        if(loader != null) loader.Unload();
+                    }
+                    playerModelBundleCache.Clear();
+                    RefreshBundlePaths();
+
+                    Player[] players = FindObjectsOfType<Player>();
+                    foreach (Player player in players)
+                    {
+                        player.gameObject.AddComponent<PlayerModel>();
                     }
                 }
+            }
 
-                if (PluginConfig.avatarMenuKey.Value.IsDown() && !showActionMenu)
+            if (!suppress_bindings && PluginConfig.actionMenuKey.Value.IsDown() && !showAvatarMenu)
+            {
+                if (PlayerModel.localModel != null && Game.instance != null)
                 {
-                    showAvatarMenu = !showAvatarMenu;
-                    if (showAvatarMenu)
+                    showActionMenu = !showActionMenu;
+                    if (showActionMenu)
                     {
                         SetUnlockCursor();
-                        GUI.FocusWindow(AvatarWindowId);
+                        GUI.FocusWindow(ActionWindowId);
                     }
                     else ResetCursor();
                 }
+            }
 
+            if (!suppress_bindings && PluginConfig.avatarMenuKey.Value.IsDown() && !showActionMenu)
+            {
+                showAvatarMenu = !showAvatarMenu;
+                if (showAvatarMenu)
+                {
+                    SetUnlockCursor();
+                    GUI.FocusWindow(AvatarWindowId);
+                }
+                else ResetCursor();
             }
 
             if (showActionMenu)
