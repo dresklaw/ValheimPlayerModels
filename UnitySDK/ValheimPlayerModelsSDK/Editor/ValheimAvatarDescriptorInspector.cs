@@ -201,12 +201,15 @@ public class ValheimAvatarDescriptorInspector : Editor
 
         if (GUILayout.Button("Export"))
         {
-            string path = EditorUtility.SaveFilePanel("Save object file", "", descriptor.avatarName + ".valavtr", "valavtr");
+            string path = EditorUtility.SaveFilePanel("Save object file", "", descriptor.avatarName.ToLower() + ".valavtr", "valavtr");
 
             if (path != "")
             {
                 string fileName = Path.GetFileName(path);
                 string folderPath = Path.GetDirectoryName(path);
+                // ensure filename is lowercase
+                fileName = fileName.ToLower();
+                path = Path.Join(folderPath, fileName);
 
                 Selection.activeObject = descriptor.gameObject;
                 EditorUtility.SetDirty(descriptor);
