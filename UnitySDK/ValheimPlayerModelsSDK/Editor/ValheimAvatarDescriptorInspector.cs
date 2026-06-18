@@ -201,15 +201,17 @@ public class ValheimAvatarDescriptorInspector : Editor
 
         if (GUILayout.Button("Export"))
         {
+            // XXX: AssetBundleBuild.assetBundleName is automagically lowercased by Unity, so let's recommend something lowercase.
+            // @see https://docs.unity3d.com/6000.3/Documentation/ScriptReference/AssetBundleBuild-assetBundleName.html
             string path = EditorUtility.SaveFilePanel("Save object file", "", descriptor.avatarName.ToLower() + ".valavtr", "valavtr");
 
             if (path != "")
             {
-                string fileName = Path.GetFileName(path);
+                // XXX: AssetBundleBuild.assetBundleName is automagically lowercased by Unity, so let's preemptively lowercase it.
+                // @see https://docs.unity3d.com/6000.3/Documentation/ScriptReference/AssetBundleBuild-assetBundleName.html
+                string fileName = Path.GetFileName(path).ToLower();
                 string folderPath = Path.GetDirectoryName(path);
-                // ensure filename is lowercase
-                fileName = fileName.ToLower();
-                path = Path.Join(folderPath, fileName);
+                string actualDest = Path.Join(folderPath, fileName);
 
                 Selection.activeObject = descriptor.gameObject;
                 EditorUtility.SetDirty(descriptor);
@@ -243,9 +245,9 @@ public class ValheimAvatarDescriptorInspector : Editor
                 EditorPrefs.SetString("currentBuildingAssetBundlePath", folderPath);
                 EditorUserBuildSettings.SwitchActiveBuildTarget(selectedBuildTargetGroup, activeBuildTarget);
                 AssetDatabase.DeleteAsset("Assets/_avatar.prefab");
-                if(File.Exists(path))
-                    File.Delete(path);
-                File.Move(Application.temporaryCachePath + "/" + fileName, path);
+                if (File.Exists(actualDest))
+                    File.Delete(actualDest);
+                File.Move(Path.Join(Application.temporaryCachePath, fileName), actualDest);
                 AssetDatabase.Refresh();
                 EditorUtility.DisplayDialog("Exportation Successful!", "Exportation Successful!", "OK");
             }
