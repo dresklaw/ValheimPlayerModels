@@ -113,7 +113,7 @@ public class ValheimAvatarDescriptorInspector : Editor
                 descriptor.leftHand.SetParent(animator.GetBoneTransform(HumanBodyBones.LeftHand), false);
                 descriptor.leftHand.localEulerAngles = new Vector3(0, 0, -180);
                 descriptor.leftHand.gameObject.AddComponent<ForceSelection>();
-                AddPreview(descriptor.leftHand,"BowPreview");
+                AddPreview(descriptor.leftHand, "BowPreview");
                 Undo.RegisterCreatedObjectUndo(descriptor.leftHand.gameObject, "added attach point");
             }
 
@@ -221,7 +221,7 @@ public class ValheimAvatarDescriptorInspector : Editor
                 GameObject avatarClone = Instantiate(descriptor.gameObject);
                 foreach (Transform child in avatarClone.GetComponentsInChildren<Transform>())
                 {
-                    if(child != null && child.CompareTag("EditorOnly")) DestroyImmediate(child.gameObject);
+                    if (child != null && child.CompareTag("EditorOnly")) DestroyImmediate(child.gameObject);
                 }
 
                 foreach (ForceSelection child in avatarClone.GetComponentsInChildren<ForceSelection>())
@@ -282,13 +282,13 @@ public class ValheimAvatarDescriptorInspector : Editor
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Parameters", EditorStyles.boldLabel);
-        DrawListAsDictionary(boolParameters,boolParametersDefault, "param_");
-        DrawListAsDictionary(intParameters,intParametersDefault, "param_");
-        DrawListAsDictionary(floatParameters,floatParametersDefault, "param_");
+        DrawListAsDictionary(boolParameters, boolParametersDefault, "param_");
+        DrawListAsDictionary(intParameters, intParametersDefault, "param_");
+        DrawListAsDictionary(floatParameters, floatParametersDefault, "param_");
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Menu", EditorStyles.boldLabel);
-        DrawCombinedLists(new string[]{"Name","Type","Parameter name","Value"}, 75,controlName,controlTypes,controlParameterNames,controlValues);
+        DrawCombinedLists(new string[] { "Name", "Type", "Parameter name", "Value" }, 75, controlName, controlTypes, controlParameterNames, controlValues);
 
         serializedObject.ApplyModifiedProperties();
     }
@@ -296,7 +296,7 @@ public class ValheimAvatarDescriptorInspector : Editor
     private void AddPreview(Transform parent, string previewName)
     {
         GameObject preview = Instantiate(Resources.Load<GameObject>(previewName));
-        preview.transform.SetParent(parent,true);
+        preview.transform.SetParent(parent, true);
         preview.transform.localPosition = Vector3.zero;
         preview.transform.localRotation = Quaternion.identity;
     }
@@ -308,8 +308,8 @@ public class ValheimAvatarDescriptorInspector : Editor
             valueList.arraySize = keyList.arraySize;
         }
 
-        EditorGUILayout.PropertyField(keyList,false);
-        
+        EditorGUILayout.PropertyField(keyList, false);
+
         if (keyList.isExpanded)
         {
             EditorGUI.indentLevel += 1;
@@ -390,7 +390,7 @@ public class ValheimAvatarDescriptorInspector : Editor
                 {
                     EditorGUILayout.BeginHorizontal();
                     EditorGUILayout.LabelField(labels[j], GUILayout.MaxWidth(labelWidth));
-                    EditorGUILayout.PropertyField(lists[j].GetArrayElementAtIndex(i),GUIContent.none);
+                    EditorGUILayout.PropertyField(lists[j].GetArrayElementAtIndex(i), GUIContent.none);
                     EditorGUILayout.EndHorizontal();
                 }
 
@@ -415,7 +415,7 @@ public class ValheimAvatarDescriptorInspector : Editor
                 {
                     for (int j = 0; j < lists.Length; j++)
                     {
-                        lists[j].DeleteArrayElementAtIndex(lists[j].arraySize-1);
+                        lists[j].DeleteArrayElementAtIndex(lists[j].arraySize - 1);
                     }
                 }
             }
