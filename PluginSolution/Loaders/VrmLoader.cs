@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#if PLUGIN
+using System.Collections;
 
 namespace ValheimPlayerModels.Loaders
 {
@@ -21,3 +22,4 @@ namespace ValheimPlayerModels.Loaders
         }
     }
 }
+#endif

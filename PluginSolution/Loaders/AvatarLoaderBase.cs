@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if PLUGIN
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -162,3 +163,4 @@ namespace ValheimPlayerModels.Loaders
         public abstract void Unload();
     }
 }
+#endif
