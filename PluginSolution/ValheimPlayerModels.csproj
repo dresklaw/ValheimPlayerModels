@@ -8,8 +8,8 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <Configurations>Debug;Release;SDK</Configurations>
-    <PackageProjectUrl>https://github.com/Ikeiwa/ValheimPlayerModels</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Ikeiwa/ValheimPlayerModels</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/dresklaw/ValheimPlayerModels</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/dresklaw/ValheimPlayerModels</RepositoryUrl>
     <Product>Valheim Player Models</Product>
   </PropertyGroup>
 
@@ -19,7 +19,7 @@
   </PropertyGroup>
 
   <Target Name="PropertyValidation" AfterTargets="BeforeBuild">
-    <Error Text="GameDir property must be provided when PublicizeLocally is 'true'." Condition="'$(GameDir)' == '' and '$(PublicizeLocally)' == 'true'"/>
+    <Error Text="GameDir property must be provided when PublicizeLocally is 'true'." Condition="'$(GameDir)' == '' and '$(PublicizeLocally)' == 'true'" />
   </Target>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -30,12 +30,15 @@
     <DefineConstants>TRACE;PLUGIN</DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' or '$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PackageReference Include="BepInEx.Analyzers" Version="1.0.8" PrivateAssets="all">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="BepInEx.Core" Version="5.4.21" />
     <PackageReference Include="BepInEx.PluginInfoProps" Version="2.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="UnityEngine.Modules" Version="2020.3.33" IncludeAssets="compile" />
   </ItemGroup>
 
@@ -43,11 +46,11 @@
     <PackageReference Include="Valheim.GameLibs" Version="*-*" IncludeAssets="compile" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(GameDir)' != '' and '$(PublicizeLocally)' == 'true'">
+  <ItemGroup Condition="'$(GameDir)' != '' and '$(PublicizeLocally)' == 'true' and $(ConfigurationName) != SDK">
     <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1" PrivateAssets="all" />
-    <Reference Include="$(GameDir)\valheim_Data\Managed\assembly_*.dll" IncludeAssets="compile" Publicize="true"/>
-    <Reference Include="$(GameDir)\valheim_Data\Managed\Splatform.dll" IncludeAssets="compile" Publicize="true"/>
-    <Reference Include="$(GameDir)\valheim_Data\Managed\SoftReferenceableAssets.dll" IncludeAssets="compile" Publicize="true"/>
+    <Reference Include="$(GameDir)\valheim_Data\Managed\assembly_*.dll" IncludeAssets="compile" Publicize="true" />
+    <Reference Include="$(GameDir)\valheim_Data\Managed\Splatform.dll" IncludeAssets="compile" Publicize="true" />
+    <Reference Include="$(GameDir)\valheim_Data\Managed\SoftReferenceableAssets.dll" IncludeAssets="compile" Publicize="true" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
