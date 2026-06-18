@@ -8,8 +8,8 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <Configurations>Debug;Release;SDK</Configurations>
-    <PackageProjectUrl>https://github.com/Ikeiwa/ValheimPlayerModels</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Ikeiwa/ValheimPlayerModels</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/dresklaw/ValheimPlayerModels</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/dresklaw/ValheimPlayerModels</RepositoryUrl>
     <Product>Valheim Player Models</Product>
   </PropertyGroup>
 
@@ -19,7 +19,7 @@
   </PropertyGroup>
 
   <Target Name="PropertyValidation" AfterTargets="BeforeBuild">
-    <Error Text="GameDir property must be provided when PublicizeLocally is 'true'." Condition="'$(GameDir)' == '' and '$(PublicizeLocally)' == 'true'"/>
+    <Error Text="GameDir property must be provided when PublicizeLocally is 'true'." Condition="'$(GameDir)' == '' and '$(PublicizeLocally)' == 'true'" />
   </Target>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -45,9 +45,9 @@
 
   <ItemGroup Condition="'$(GameDir)' != '' and '$(PublicizeLocally)' == 'true'">
     <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1" PrivateAssets="all" />
-    <Reference Include="$(GameDir)\valheim_Data\Managed\assembly_*.dll" IncludeAssets="compile" Publicize="true"/>
-    <Reference Include="$(GameDir)\valheim_Data\Managed\Splatform.dll" IncludeAssets="compile" Publicize="true"/>
-    <Reference Include="$(GameDir)\valheim_Data\Managed\SoftReferenceableAssets.dll" IncludeAssets="compile" Publicize="true"/>
+    <Reference Include="$(GameDir)\valheim_Data\Managed\assembly_*.dll" IncludeAssets="compile" Publicize="true" />
+    <Reference Include="$(GameDir)\valheim_Data\Managed\Splatform.dll" IncludeAssets="compile" Publicize="true" />
+    <Reference Include="$(GameDir)\valheim_Data\Managed\SoftReferenceableAssets.dll" IncludeAssets="compile" Publicize="true" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
