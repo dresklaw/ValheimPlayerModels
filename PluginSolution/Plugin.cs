@@ -64,7 +64,15 @@ namespace ValheimPlayerModels
 
         private void Update()
         {
-            if (PluginConfig.reloadKey.Value.IsDown())
+            // Suppress our bindings the player controller does not accept input
+            // (implying input is being used for something else).
+            var suppress_bindings = !(
+                Game.instance != null &&
+                Game.instance.m_playerPrefab != null &&
+                Game.instance.m_playerPrefab.GetComponent<PlayerController>().TakeInput()
+            );
+
+            if (!suppress_bindings && PluginConfig.reloadKey.Value.IsDown())
             {
                 if (PluginConfig.enablePlayerModels.Value)
                 {
@@ -103,7 +111,7 @@ namespace ValheimPlayerModels
                 }
             }
 
-            if (PluginConfig.actionMenuKey.Value.IsDown() && !showAvatarMenu)
+            if (!suppress_bindings && PluginConfig.actionMenuKey.Value.IsDown() && !showAvatarMenu)
             {
                 if (PlayerModel.localModel != null && Game.instance != null)
                 {
@@ -117,7 +125,7 @@ namespace ValheimPlayerModels
                 }
             }
 
-            if (PluginConfig.avatarMenuKey.Value.IsDown() && !showActionMenu)
+            if (!suppress_bindings && PluginConfig.avatarMenuKey.Value.IsDown() && !showActionMenu)
             {
                 showAvatarMenu = !showAvatarMenu;
                 if (showAvatarMenu)
