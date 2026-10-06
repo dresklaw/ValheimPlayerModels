@@ -17,7 +17,7 @@ Use custom player models in Valheim!
 # How to create an avatar
 
  1. Install Unity, generally preferring the version with which Valheim itself is built, presently along the lines of [Unity 6000.0.61](https://unity3d.com/unity/whats-new/6000.0.61)
- 2. Create a new 3D Project.
+ 2. Create a new 3D Project. Ensure you're using the Built-in Render Pipeline.
  3. [Download the SDK](https://github.com/dresklaw/ValheimPlayerModels/releases/latest/download/ValheimPlayerModels_SDK.unitypackage)
  4. Import the SDK and all your avatar assets.
  5. Change your avatar model rig to Humanoid if its not already setup from the import.
